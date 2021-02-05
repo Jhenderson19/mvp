@@ -11,7 +11,10 @@ class RoomGenerator {
     this.victoryData = require('../data/victories');
     fs.readdirAsync(path.join(__dirname, '../data/layouts'))
       .then((files) => {
-        this.layouts = files.length;
+        this.layouts = [];
+        files.map((file) => {
+          this.layouts.push(file);
+        })
       })
   }
 
@@ -20,7 +23,7 @@ class RoomGenerator {
       this.hazardData[this.getRand(this.hazardData.length)],
       this.opponentData[this.getRand(this.opponentData.length)],
       this.victoryData[this.getRand(this.victoryData.length)],
-      (this.getRand(this.layouts) + 1)
+      this.layouts[this.getRand(this.layouts.length)]
     );
   }
 

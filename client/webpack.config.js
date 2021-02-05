@@ -5,7 +5,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: [/\.js$/, /\.jsx$/],
         exclude: /node_modules/,
         use: ["babel-loader"]
       }
@@ -15,5 +15,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "src", "index.html")
     })
-  ]
+  ],
+  watch: true,
+  watchOptions: {
+    ignored: /node_modules/
+  }
 };
