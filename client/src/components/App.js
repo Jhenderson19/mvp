@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
+import Hazard from "Hazard.js";
+import Layout from "Layout.js";
+import Opponent from "Opponent.js"
 
 
 class App extends React.Component {
@@ -14,7 +17,7 @@ class App extends React.Component {
       <div>
         <h1>Chaos Dungeon</h1>
         <table>
-          <Opponents text={this.state.opponents}/>
+          <Opponent text={this.state.opponents}/>
           <Hazard text={this.state.hazard}/>
           <Layout src={this.state.layout}/>
         </table>
