@@ -5,20 +5,13 @@ const path = require('path');
 
 class RoomGenerator {
   constructor(){
+    this.loaded = false;
     this.hazardData = require('../data/hazards');
     this.opponentData = require('../data/opponents');
     this.victoryData = require('../data/victories');
     fs.readdirAsync(path.join(__dirname, '../data/layouts'))
       .then((files) => {
-        return files.map((file) => {
-          return fs.readFileAsync(path.join(__dirname, `../data/layouts/${file}`))
-        })
-      })
-      .then((promises) => {
-        return Promise.all(promises);
-      })
-      .then((data) => {
-        this.layouts = data;
+        this.layouts = files.length;
       })
   }
 
@@ -27,8 +20,8 @@ class RoomGenerator {
       this.hazardData[this.getRand(this.hazardData.length)],
       this.opponentData[this.getRand(this.opponentData.length)],
       this.victoryData[this.getRand(this.victoryData.length)],
-      this.layouts[this.getRand(this.layouts.length)]
-    )
+      (this.getRand(this.layouts) + 1)
+    );
   }
 
   getRand(length) {
@@ -41,7 +34,7 @@ class Room {
     this.hazard = haz;
     this.opponent = opp;
     this.victory = vic;
-    this.layout = layout
+    this.layout = layout;
   }
 }
 module.exports = new RoomGenerator();

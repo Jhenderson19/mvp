@@ -5,19 +5,19 @@ var saveManager = require('./models/saveManager')
 router.get('/room', (req, res, next) => {
   var room = roomGenerator.createRoom();
   console.log(room);
-  res.status(200).json(room)
+  res.status(200).json(room);
 });
 
-router.get('/save', (req, res, next) => {
-
+router.post('/save/lookup', (req, res, next) => {
+  console.log('received /save get request');
+  res.status(200).send('save');
 });
 
-router.post('/save', (req, res, next) => {
+router.post('/save/record', (req, res, next) => {
+  console.log('received /save post request');
 
-
-
-  res.status(200).json(req.body);
-
+  saveManager.record(req.body);
+  res.status(200).send('added save');
 
   next();
 });
