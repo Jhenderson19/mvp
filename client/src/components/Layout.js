@@ -4,7 +4,7 @@ import { render } from "react-dom";
 function Layout(props) {
   return (
     <tr>
-      <td id="Layout">
+      <td id="Layout" className="trLabel">
         <h3>Room Layout</h3>
       </td>
       <td>

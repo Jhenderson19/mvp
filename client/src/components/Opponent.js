@@ -4,7 +4,7 @@ import { render } from "react-dom";
 function Opponent(props) {
   return (
     <tr>
-      <td id="Opponent">
+      <td id="Opponent" className="trLabel">
         <h3>Opponents</h3>
       </td>
       <td>

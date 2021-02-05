@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack --mode development"
+    "compile": "webpack --mode development"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,8 @@
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
+    "jquery": "^3.5.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   }

@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
 
-function Hazard(props) {
+function Victory(props) {
   return (
     <tr>
-      <td id="Hazard" className="trLabel">
-        <h3>Hazard Zone</h3>
+      <td id="Victory" className="trLabel">
+        <h3>Victory Condition</h3>
       </td>
       <td>
         {props.text}
@@ -14,4 +14,4 @@ function Hazard(props) {
   )
 }
 
-export default Hazard;
+export default Victory;

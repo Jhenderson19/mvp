@@ -10,7 +10,8 @@ app.use(bodyParser.json());
 
 //Serve Client Files
 app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
-app.use('/layouts', express.static(path.join(__dirname, 'data', 'layouts')))
+app.use('/layouts', express.static(path.join(__dirname, 'data', 'layouts')));
+app.use('/layouts/default', express.static(path.join(__dirname, 'default')));
 
 //API Stuff
 app.use('/api', router);
