@@ -18,7 +18,12 @@ function SaveFrame(props) {
           })
         }
       }>Save Game</button>&nbsp;
-      <button onClick={props.loadGame}>Load Game</button>
+      <button onClick={
+        () => {
+          console.log('pressed load button');
+          props.loadGame();
+        }
+      }>Load Game</button>
     </div>
   )
 }

@@ -5,7 +5,7 @@ USE chaosDungeon;
 
 CREATE TABLE SaveGames (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  name TINYTEXT UNIQUE,
+  name VARCHAR(80) UNIQUE NOT NULL,
   roomsRequired INT,
   roomsCompleted INT
 );

@@ -2,13 +2,16 @@ var router = require('express').Router();
 var roomGenerator = require('./models/roomGenerator');
 var saveManager = require('./models/saveManager')
 
-router.get('/room', (req, res, next) => {
+router.get('/room', (req, res) => {
   var room = roomGenerator.createRoom();
   res.status(200).json(room);
 });
 
-router.post('/save/lookup', (req, res, next) => {
+router.post('/save/lookup', (req, res) => {
   console.log('received /save get request');
+  console.log(req.body.saveName);
+
+
   saveManager.get(req.body.saveName)
     .then((results) => {
       console.log('found the following results...');
@@ -25,11 +28,14 @@ router.post('/save/record', (req, res, next) => {
 
   saveManager.record(req.body)
     .then((results) => {
+      console.log(results);
       res.status(200).send('Sucessfully added Save!');
     })
-    .catch()
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send(error);
+    })
 
-  next();
 });
 
 module.exports = router;

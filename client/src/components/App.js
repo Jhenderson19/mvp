@@ -102,6 +102,8 @@ class App extends React.Component {
 
     this.requestManager.getSaveByName(gameToLoad, (data) => {
 
+      console.log('yo');
+
       var newState = {};
       newState.gameState = 'running';
       newState.roomsCompleted = data.roomsCompleted;
