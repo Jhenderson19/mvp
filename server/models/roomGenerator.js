@@ -35,7 +35,7 @@ class RoomGenerator {
 class Room {
   constructor(haz, opp, vic, layout){
     this.hazard = haz;
-    this.opponent = opp;
+    this.opponents = opp;
     this.victory = vic;
     this.layout = layout;
   }

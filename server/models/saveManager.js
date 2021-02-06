@@ -1,7 +1,7 @@
-var db = require('../db/db.js');
+var db = require('../db/db');
 var Promise = require('bluebird');
-const e = require('express');
-db = Promise.promisifyAll(db);
+db.queryAsync = Promise.promisify(db.query).bind(db);
+
 
 class SaveManager {
   constructor() {
@@ -9,24 +9,14 @@ class SaveManager {
   }
 
   get(saveName) {
-    db.createQueryAsync(`SELECT * FROM SaveGames WHERE name = ${saveName}`)
+    return db.queryAsync(`SELECT * FROM SaveGames WHERE name = '${saveName}'`)
       .then((results) => {
-        console.log(results);
+        return results
       })
-      .catch((err) => {
-        console.log('err =>',err);
-      });
   }
 
   record(saveData) {
-    db.createQueryAsync(`INSERT INTO SaveGames (name, roomsRequired, roomsCompleted)
-    VALUES (${saveData.name}, ${saveData.roomsRequired}, ${saveData.roomsCompleted}`)
-    .then((results) => {
-      console.log(results);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    return db.queryAsync(`INSERT INTO SaveGames (name, roomsRequired, roomsCompleted) VALUES ('${saveData.saveName}', ${saveData.roomsRequired}, ${saveData.roomsCompleted})`);
   }
 }
 
