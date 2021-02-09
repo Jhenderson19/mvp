@@ -16,6 +16,10 @@ router.post('/save/lookup', (req, res) => {
     .then((results) => {
       console.log('found the following results...');
       console.log(results);
+      res.status(200).json({
+        roomsRequired: results[0].roomsRequired,
+        roomsCompleted: results[0].roomsCompleted
+      })
     })
     .catch((error) => {
       console.error('error: ', error);

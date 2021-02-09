@@ -1,10 +1,9 @@
-import $ from 'jquery'
-import Promise from 'bluebird'
+import $ from 'jquery';
 
 class RequestManager {
   constructor() {
-
   }
+
   getRoom(cb) {
     $.ajax({
       url: "/api/room",

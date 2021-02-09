@@ -102,13 +102,12 @@ class App extends React.Component {
 
     this.requestManager.getSaveByName(gameToLoad, (data) => {
 
-      console.log('yo');
-
       var newState = {};
       newState.gameState = 'running';
       newState.roomsCompleted = data.roomsCompleted;
       newState.roomsRequired = data.roomsRequired;
 
+      this.cancelRoom();
       this.setState(newState);
     })
 
@@ -133,7 +132,7 @@ class App extends React.Component {
           cancelRoom={this.cancelRoom.bind(this)}
         /> <br />
 
-        <table>
+        <table width="95%">
           <tbody>
             <Opponent text={this.state.currentRoom.opponents}/>
             <Hazard text={this.state.currentRoom.hazard}/>
@@ -152,6 +151,7 @@ class App extends React.Component {
       </div>
     )
   }
+
 }
 
 export default App;

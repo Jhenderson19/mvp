@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
 
+function createMarkup(text) {
+  return {__html: text};
+}
+
 function Opponent(props) {
   return (
-    <tr>
+    <tr width="25%">
       <td id="Opponent" className="trLabel">
         <h3>Opponents</h3>
       </td>
       <td>
-        {props.text}
+        <div dangerouslySetInnerHTML={createMarkup(props.text)} />
       </td>
     </tr>
   )
