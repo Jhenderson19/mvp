@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>The Cube of Chaos v2.0</title>
+    <script src="lib\jquery-3.5.1.min.js"></script>
+    <script src='data\opponents.js'></script>
+    <script src='data\roomSettings.js'></script>
+    <script src='data\difficultySettings.js'></script>
+    <script src='func\save-load.js'></script>
+    <script src='func\roomGenerator.js'></script>
+    <script src='convertOpp.js'></script>
+    <script>
+			//Init
+			
+				{//Lookup Tables
+					{Opponents = [	//2D array. Dim0 - entries
+					//List of Opponents (Index 0)												-XP Value (Index 1) -Count (Index 2)
+					//CR 1/2 (0)
+						["Satyr",																	100,				1],
+						["Darkling",																100,				1],
+						["Skeleton<br>Zombie",														150,				2],
+						["Winged Kobold",															150,				1],
+						["Xvart x3",																150,				3],
+						["Tribal Warrior<br>Poisonous Snake<br>Monodrone",							150,				3],
+					//CR 1
+						["Gnoll Flesh Gnawer",														200,				1],
+						["Giant Wasp<br>Gazer",														300,				2],
+						["Magmin<br>Shadow",														300,				2],
+						["Pixie<br>Needle Blight<br>Kobold Inventor<br>Boggle x2",					400,				4],
+						["Violet Fungus<br>Velociraptor<br>Troglodyte<br>Vegepygmy",				400,				4],
+						["Neogi x7",																437.5,				7],
+					//CR 2
+						["White Dragon Wyrmling",													450,				1],
+						["Purple Grung Wildling<br>Gray Ooze (Psychic)",							450,				2],
+						["Boggle x10",																500,				10],
+						["Maw Demon x2",															600,				2],
+						["Flying Sword<br>Bullywug<br>Axe Beak<br>Dretch<br>Blink Dog x2",			600,				6],
+						["Ice Mephit<br>Dust Mephit<br>Magma Mephit<br>Twig Blight",				650,				4],
+					//CR 3
+						["Owlbear",																	700,				1],
+						["Sahuagin x4",																800,				4],
+						["Half-Ogre<br>Thug<br>Stench Kow x3",										900,				5],
+						["Choker<br>Orc x2<br>Gnoll Withering",										900,				4],
+						["Merrow<br>Kuo-toa Whip",													975,				2],
+						["Jackalwere<br>Giant Toad<br>Animated Armor",								1000,				3],
+					//CR 4
+						["Ogre Battering Ram",														1100,				1],
+						["Vegepygmy Chief<br>Vegepygmy x5",											1400,				6],
+						["Hobgoblin x3<br>Grick",													1500,				4],
+						["Myconid Sovereign<br>Giant Goat x3<br>Giant Weasel x2",					1600,				6],
+						["Imp x2<br>Gnoll Pack lord",												1700,				3],
+						["Stone Cursed<br>Darkling Elder<br>Darkling x2",							1700,				4],
+					//CR 5
+						["Mindwitness",																1800,				1],
+						["Peryton<br>Death Dog x3",													2100,				4],
+						["Giff x2",																	2100,				2],
+						["Grell<br>Duergar Soulblade",												2200,				2],
+						["Displacer Beast<br>Imp<br>Thri-kreen",									2200,				3],
+						["Ghast x2<br>Kobold Scale Sorcerer<br>Cultist",							2250,				4],
+					//CR 6
+						["Poltergeist<br>Grung x6<br>Grung Wildling",								2375,				8],
+						["Bandit Captain<br>Hobgoblin Iron Shadow<br>Hobgoblin x2<br>Thug",			2400,				5],
+						["Ghast<br>Thorny x3<br>Myconid Adult x2",									2500,				6],
+						["Berserker<br>Magma Mephit x3<br>Ice Mephit x3",							2625,				7],
+						["Red Slaad<br>Slaad Tadpole",												2737.5,				2],
+						["Shadow Demon<br>Skulk x3",												2800,				4],
+					//CR 7
+						["Mind Flayer",																2900,				1],
+						["Bulette<br>Quickling",													3000,				2],
+						["Quaggoth Thonot<br>Rhinoceros<br>Gelatinous Cube",						3200,				3],
+						["Gargoyle x2<br>Goblin Boss<br>Goblin x4",									3250,				7],
+						["Umber Hulk<br>Black Guard Drake",											3375,				2],
+						["Imp x4 (MM 76)<br>Pegasus x2 (MM 250)", 									3400,				6],
+					//CR 8
+						["Lion x8 (MM 331)", 														4000,				8],
+						["Fire Snake x8 (MM 265)", 													4000,				8],
+						["Iron Cobra (MToF 125)<br>Quadrone x5 (MM 226)",							4200,				6],
+						["Bone Naga (MM 233)<br>Harpy x5 (MM 181)",									4200,				6],
+						["Babau (VGtM 136)<br>Specter x5 (MM 279)",									4200,				6],
+						["Gnoll Pack Lord<br>Orog<br>Green Dragon Wyrmling x2<br>Scarecrow x2",		4400,				6],
+					//CR 9
+						["Cloud Giant (MM 154)",													5000,				1],
+						["Young Blue Dragon (MM 118)",												5000,				1],
+						["Bulezau x2 (MToF 131)<br>Dybbuk (MToF 132)",								5000,				3],
+						["Helmed Horror (MM 183)<br>Manticore (MM 213)<br>Wight (MM 300)",			5000,				3],
+						["Ankheg x6 (MM 21)",														5400,				6],
+						["Beholder Zombie (MM 316)<br>Kobold Dragonshield x5 (VGtM 165)",			5600,				6],
+					//CR  10
+						["Minotaur x3 (MM 223)<br>Cult Fanatic x2 (MM 345)",						6000,				5],
+						["Quickling x4<br>Drider",													6200,				5],
+						["Orc Claw of Luthic x2 (VGtM 183)<br>Orc Blade of Ilneval x2 (VGtM 183)",	6200,				4],
+						["Shambling Mound (MM 270)<br>Will-o-Wisp x3 (MM 301)",						6300,				4],
+						["Dryad x3 (MM 121)<br>Ghoul x3 (MM 148)<br>Neogi x2 (VGtM 180)",			6500,				8],
+						["Choker x3 (MToF 123)<br>Gibbering Mouther x2 (MM 157)<br>Roper (MM 261)",	6600,				6],
+					//CR 11
+						["Ghost (MM 147)<br>Mummy x2 (MM 228)<br>Stegosaurus (MM 140)",				7200,				4],
+						["Behir (MM 25)",															7200,				1],
+						["Djinni",																	7200,				1],
+						["Kruthic Hive Lord<br>Kruthic x3<br>Basilisk",								7700,				5],
+						["Invisible Stalker<br>Ogre x2<br>Ogre Chain Brute",						7800,				4],
+						["Armanite<br>Drider",														7800,				2],
+					//CR 12
+						["Bone Devil<br>Hook Horror",												8550,				2],
+						["Oni x2",																	8700,				2],
+						["Blue Slaad<br>Grick Alpha",												8700,				2],
+						["Spawn of Kyuss x2<br>Ogre Zombie x2",										9000,				4],
+						["Young Remorhaz<br>Girallon<br>Bearded Devil x2<br>Carrion Crawler",		9500,				5],
+						["Gauth x2<br>Choker",														9600,				3],
+					//CR 13
+						["Beholder",																10000,				1],
+						["Young Green Dragon<br>Young Black Dragon",								10200,				2],
+						["Yachlol<br>Barghest",														10500,				2],
+						["Cambion x3",																10800,				3],
+						["Bulette x3",																10800,				3],
+						["White Abishai<br>Barbed Devil<br>Spined Devil x3",						10900,				5],
+					//CR 14
+						["Elder Brain",																11500,				1],
+						["Howler<br>Frost Giant",													11700,				2],
+						["Vrock<br>Star Spawn Mangler x2",											11800,				3],
+						["Water Elemental Myrmidon<br>Chuul x3",									12400,				4],
+						["Mezzoloth<br>Ogre Battering Ram x2<br>Hobgoblin Devastator x2",			12400,				5],
+						["Giant Ape<br>Flameskull x3",												12400,				4],
+					//CR 15
+						["Korred<br>Wood Woad x2",													13000,				3],
+						["Cloaker<br>Mummy x4",														13400,				5],
+						["The Lost x2<br>Neogi Master",												13800,				3],
+						["Nycaloth<br>Girallon x2",													14400,				3],
+						["Gladiator x4",															14400,				4],
+						["Hill Giant x2<br>Gorgon x2",												14400,				4],
+					//CR 16
+						["Marilith",																15000,				1],
+						["Draegloth x2<br>Conjurer x2",												16000,				4],
+						["Stone Giant Dreamwalker<br>Hydroloth",									16350,				2],
+						["Otyugh x2<br>Wyvern x2",													16400,				4],
+						["Summer Eladrin<br>Winter Eladrin",										17700,				2],
+						["Retreiver<br>Cult Fanatic",												17925,				2],
+					//CR 17
+						["Adult Blue Dracolich",													18000,				1],
+						["Mind Witness x2<br>Beholder Zombie x2<br>Gauth",							19000,				5], 
+						["Neothelid<br>Mind Flayer",												19350,				2],
+						["Deathlock Mastermind<br>Giant Skeleton x2",								19400,				3],
+						["Green Slaad<br>Blue Slaad x2",											19400,				3],
+						["Remorhaz<br>Star Spawn Hulk",												19650,				2],
+					//CR 18
+						["Sibriex",																	20000,				1],
+						["Galeb Duhr x4<br>Stegosaurus",											20600,				5],
+						["Orthon<br>Revenant x2<br>Weretiger",										21200,				4],
+						["Sword Wraith Commander<br>T-Rex<br>Venom Troll",							21400,				3],
+						["Helmed Horror<br>Catoblepas<br>Hezrou<br>Hydra",							21400,				4],
+						["Morkoth<br>Horned Devil",													21600,				2],
+					//CR 19
+						["Balor",																	22000,				1],
+						["Devourer<br>Nycaloth",													22500,				2],
+						["Warforged Titan x3 (Ebb 315)",											23400,				3],
+						["Chimera<br>Berbalang x2<br>Peryton x2<br>Xorn x3",						23750,				8],
+						["Dhergoloth<br>Gorgon x2<br>Fire Elemental x2",							23800,				5],
+						["Shield Guardian x3<br>Stone Defender x3",									24000,				6],
+					//CR 20
+						["Pit Fiend",																25000,				1],
+						["Orthon<br>Fire Giant Dreadnaught",										26100,				2],
+						["Wastrilith<br>Mouth of Grolantor<br>Living Lightning Bolt",				28200,				3],
+						["Master of Cruelties<br>Evoker x2",										30000,				3],
+						["Flind<br>Earth Elemental Myrmidon<br>Blackguard x2<br>",					31400,				4],
+						["Incubus<br>Living Cloudkill<br>The Lonely<br>Yagnaloth",					32400,				4],
+					//CR 21
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 22
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 23
+						["Jubilex",																	50000,				1],
+						["The Angry<br>The Hungry<br>The Lonely<br>The Lost<br>The Wretched",		50300,				5],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 24
+						["Yeenoghu",																62000,				1],
+						["Graz'zt",																	62000,				1],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 25
+						["Warforged Colossus (Ebberon 314)",										75000,				1],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 26
+						["Zariel",																	90000,				1],
+						["Orcus",																	90000,				1],
+						["Demogorgon",																90000,				1],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 27
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 28
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 29
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//CR 30
+						["Tarrasque",																155000,				1],
+						["Tiamat",																	155000,				1], 
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+						["",																		,					],
+					//FINAL BOSS. 
+						["Maia",																	255000,				1],
+					];}
+					
+					{var Hazards = [
+						"The Hazard Zone lowers 5 feet and fills with lava, dealing 8d10 fire damage on contact.",
+						"The Hazard Zone emits strong winds that change direction randomly each round.",
+						"The Hazard Zone emits an anti-Magic field that extends 100ft into the air.",
+						"Any creature that begins its turn in the Hazard zone regains 1d6 hp.",
+						"The Hazard Zone raises 20 feet vertically. The resulting walls are climbable.",
+						"The Hazard Zone lowers by 15 feet and fills with acid, dealing 4d10 acid damage on contact.",
+						"The Hazard Zone becomes covered in ice. Any creature that moves across it must succeed on a DC15 Dex Saving throw or fall prone.",
+						"The Hazard Zone lowers by 20 feet.",
+						"The Hazard Zone is covered in a Web Spell",
+						"Any spells cast within the Hazard Zone trigger a Wild Magic surge.", 
+						//10
+						"Non-Magical attacks against creatures in the Hazard Zone always do maximum damage",
+						"Creatures in the Hazard Zone have disadvantage on all Saving Throws against magical effects",
+						"A creature that begins its turn in the Hazard Zone is teleported to a random location in The Cube.",
+						"The Hazard Zone is covered in skeletal hands that grapple any creature that ends its turn in The Hazard Zone. (Escape DC 15)",
+						"The Hazard Zone lowers by 5 feet and is covered in quicksand (difficult terrain, DC 15 Athletics check to stand up from prone)",
+						"A creature in the hazard zone must succeed on a DC 15 Wisdom Saving throw or become enraged and attack the closest creature to it",
+						"A creature that starts its turn in the hazard zone gains a flight speed of 30ft until the beginning of its next turn",
+						"The Hazard Zone is shrouded in magical darkness",
+						"The Hazard Zone emits a field that destroys any non-magical projectiles that pass through it.",
+						"A creature that starts its turn in the hazard zone gains 120 feet of blindsight.",
+						//20
+						"The Hazard Zone lowers 20 feet and fills with water.",
+						"The First creature to enter the Hazard Zone may choose a hazard from this list. Afterwards, they may choose to be teleported to the nearest Non-Hazard zone.",
+						"The Hazard Zone has no atmosphere. Fires are snuffed out, breathing becomes impossible, and no sounds can me made or heard within.",
+						"The Hazard Zone is a 20 foot tall wall, made of the flesh of a Gelatinous Cube. A creature within it takes 6d6 acid damage and must make a DC12 Strength Saving throw to escape.",
+						"Creatures and objects in the Hazard Zone glow brightly. Attacks against these creatures are made with advantage if the attacker can see them.",
+						"Reroll The Hazard Zone at the beginning of each round of Combat.",
+						"A random enemy in the room is marked with a red sigil and must end every turn in the Hazard Zone if able. Attacks of opportunity are made with advantage against this creature, and it gains +4 to damage rolls on melee weapon attacks. If it ends its turn outside of the Hazard Zone, it takes radiant damage equal to half of its current HP.",
+						"On Inititiative Count 20, roll a d4. On a four, all creatures in the Hazard Zone take must make a DC 13 Dexterity Saving Throw and 1d6 bludgeoning damage times their level or CR, or half as much on a successful save, as rocks or objects fall on them.",
+						"The air in the Hazard Zone is contaminated with sickening toxins. Creatures in the Hazard Zone must make a DC 15 Constitution saving throw and take 6d12 poison damage on a failed save, or half as much on a successful one."
+					];}
+					
+					{var RoomTypes = [
+						"The Cube is a Cave, with openings in the ceiling large enough to dimly light it",
+						
+						"The Cube is a Grassy Field, with forests beyond the invisible walls of The Cube",
+						
+						"The Cube is a room in an ancient temple, with a polished stone floor and statues of famous ancient kings along its walls. Dimly Lit",
+						
+						"The Cube is at the top of an enormous snowy mountain, fog covering the world below. Brightly lit",
+						
+						"The Cube is in the Nine Hells. On Initiative 20, there is a 20% chance the ground will erupt in a random square, dealing 1d10 fire damage to any creature in the area",
+						
+						"The Cube is in the Abyss. The constant flashes of lightning in the distance keep The Cube brightly lit.",
+						
+						"The Cube is in the Feywild. Beautiful plants, woodland creatures, and obscured fey creatures observe the battle.",
+						
+						"The Cube is in The Endless Time. When combat begins, roll a d20. 1-3: Spells cast here have a maximum duration of 1 round. 18-20: All non-instantaneous spells cast here last until The Cube shifts.",
+						
+						"The Cube is a graveyard at night. There is no source of light.",
+						
+						"The Cube is a platform suspended in space. Planets, Stars and galaxies appear to orbit The Cube.",
+						//10
+						"The Cube is in one of the player's minds. Ask them them to describe the landscape",
+						
+						"The Cube is in a town hall. The smell of freshly cooked meals comes in from doors along the walls.",
+						
+						"The Cube is in a desert. Mountainous plateaus and crags surround The Cube.",
+						
+						"The Cube is on a beach. An ocean is one side, and a cliff the other.",
+						
+						"The Cube is in a city square. Onlookers shout and cheer, watching as the battle rages on.",
+						
+						"The Cube is on the back of a massive red dragon. On Initiative count 20, roll a d4. on a 1, all creatures on the ground must make a dc 13 dex saving throw or be knocked prone",
+						
+						"The Cube is on an alien world. The sky is a deep purple and the earth is orange and barren. Gravity is increased here. Ranged attacks suffer a -5 to hit. Flying speeds for all creatures in the cube are halved. Any creature that moves must succeed on a DC13. STR Saving throw or fall prone. All DEX Saving throws are made with disadvantage.",
+						
+						"The Cube is on an alien world. The grass around you is blue, the water in a lake outside of the cube is green, and the sky is also an odd shade of green. Tall, thin trees with blue leaves dot the landscape, and 3 suns are visible in the sky.",
+						
+						"The Cube is in the center of an enormous battlefield outside of a city wall, with arrows and siege weaponry flying over the invisible walls. On Initiative 20, roll a d20. 18-19: An arrow hits a random creature in The Cube. 20: A Cannonball lands on a random 5x5 Square. Creatures in the square must make a DC 17 Dexterity saving throw or take 1d10+10 bludgeoning damage.",
+						
+						"The Cube is in an Evil King's throne room. He looks inwards from outside the boundry of The Cube, rooting for whatever creatures he has in his employ."
+						//20
+						
+					];}
+					
+					{var VictoryConditions = [	//2D array. Dim0 - entry
+						//Dim 1 - String to paste (Index 0) - Identifier String (Index 1)
+						//Victory Condition CodeName	//Function called by victory condition
+						//Exterminate					-No special functions
+						["<b>Exterminate: </b><br>In order to continue, defeat all enemies. If there is only one enemy, it has maximum HP for its hitdice, and has +2 to damage and attack rolls.","EX"],
+						
+						//Interception					-ritualVC()
+						["<b>Complete the Ritual: </b><br><div id=\"ritualVC\" style=\"display:inline-block;\"><img src onerror=\"ritualVC()\"></div> Arcane circles appear on the ground in Non-Hazard Zones. All circles must be occupied by a PC on Initiative 20 to continue.","IN"],
+						
+						//Mobile Defense				-No special functions
+						["<b>Deliver the Relic: </b><br>Both an empty, bowl shaped pedestal and a crystal orb appear in a Non-Hazard zone. Players must place the orb on the pedestal and defend it for 1 round to continue. Taking damage while holding the orb causes the orb to be dropped.","MD"],
+						
+						//Assassinate					-No special functions
+						["<b>Assassinate: </b><br>A Random enemy is marked with a golden sigil. It has maximum HP for its hitdice, and has +2 to damage and attack rolls. In order to continue, players must defeat this enemy.","AS"],
+						
+						//Survival						-survivalVC()
+						["<b>Survive: </b><br>Slain Enemies are resurrected as far away from players as possible in Non-Hazard zones on their next turn after spending one round dead. Players must survive <div id=\"survivalVC\" style=\"display:inline-block;\"><img src onerror=\"survivalVC()\"></div> rounds to continue.","SU"],
+						
+						//Hive (DEPRECIATED)			-hiveVC()
+						//["<b>Diamond Hunting: </b><br>There is a glowing, spinning diamond in a Non-Hazard Zone. It has an AC of 14, and <div id=\"hiveVC\" style=\"display:inline-block;\"><img src onerror=\"hiveVC()\"></div> HP. It is immune to effects and damage from spells and ranged attacks, and all damage it takes otherwise is reduced to one. When it takes damage, it is teleported to a new random location in a Non-Hazard Zone. Players must destroy it to continue.","HI"],
+						
+						//Target Practice (HIVE 2.0)	-targetVC()
+						["<b>Target Practice: </b><br>There are <div id=\"targetVC\" style=\"display:inline-block;\"><img src onerror=\"targetVC()\"></div> glowing pustules in random locations within the Cube (Including Hazard Zones, if possible). They have an AC of 13, and 1 HP. They are immune to all spells of 6th level or lower. Destroy all pustules to continue.","TP"],
+						
+						//Defense						-No special functions
+						["<b>Defend the Statue: </b><br>A statue of a random player appears in a Non-Hazard Zone. Its AC is 2 greater than that player's AC (max 20), and its HP is equal to that player's maximum HP. The statue cannot gain hitpoints from any source. If the statue is destroyed, that player loses 2 AC, has disadvantage on all saving throws, and can not gain hitpoints until the Cube shifts. Defeat all enemies to continue. If the statue survives the battle, that player may take a short rest instantaneously before The Cube shifts. If the room already allows short rests, they may take a long rest instead.","DE"],
+						
+						//Excavation					-orbVC()
+						["<b>Multiple Point Defense: </b><br>A number of glowing white orbs equal to the number of players appear in the air in a Non-Hazard Zone. They start with 0 charges, and gain a charge on Initiative count 20 if they have not taken damage since their last turn. When an orb reaches 4 charges, it flies to the nearest player that has neither collected an orb or been damaged by an orb and does not have full HP. When it arrives, it restores hp equal to 1/8 of the player's maximum. The Orbs have an AC of 15 and an HP of 4. Damage to The Orbs from all sources is reduced to 1. When an orb has only 1 HP left, it becomes red and begins arcing harmless electricity to its surroundings. When an orb is destroyed, the closest player within 10 feet of the orb must make a DC 13 Dexterity Saving throw and take <div id=\"orbVC\" style=\"display:inline-block;\"><img src onerror=\"orbVC()\"></div> thunder damage on a failed save or half as much on a successful one. To continue, all orbs must be either destroyed or collected.","MP"],
+						
+						//Capture						-captureVC()
+						["<b>Follow The Leader: </b><br>A 5 foot tall, 3 foot wide silver cylinder emerges from the floor in a Non-Hazard Zone. On Initiative count 20, roll a d10. On a 1 it moves north, On a 2 it moves northeast, and so on. On a 9 it stays still, and on a 10 it teleports to a random location in a Non-Hazard zone. The cylinder moves 1d6 * 5 feet when it moves. When a player ends their turn within 5 feet of the cylinder, it gains 1 charge. The Cylinder can only gain one charge between each of its turns. To continue, the cylinder must end its turn with <div id=\"captureVC\" style=\"display:inline-block;\"><img src onerror=\"captureVC()\"></div> charges.","CA"],
+						
+						//Rescue						-rescueVC()
+						["<b>Rescue the Traitor: </b><br>The <div id=\"rescueVC\" style=\"display:inline-block;\"><img src onerror=\"rescueVC()\"></div> creature from the previous room survived the battle, and has followed the players through The Cube's shift. If it survives this room, it will help you in the rooms afterwards. <br><br><div id=\"rescueVC2\" style=\"display:inline-block;\"></div>","RE"]
+					];}
+					
+					{var MagicManCurses = [
+						"A Random Player loses 1d6 points in their highest stat",
+						"Target a random player with spell slots. Roll a D4. That player can no longer cast... <br>1: Spells with Verbal Components<br>2: Spells with Somatic Components<br>3: Spells with Material Components<br>4: Spells that have a duration",
+						"Target a random player without spell slots. They can no longer use the weapon they last dealt damage with.",
+						"Target a random player. Their movement speed is halved.",
+						"Target a random player with DEX > 10. Their Armor class no longer benefits from their Dexterity modifier.",
+						"Target a random player. They are deaf.",
+						"Target a random player. Ther are now vulnerable to Bludgeoning, Piercing and Slashing damage.",
+						"Target a random player. They can no longer gain hitpoints.",
+						"Target a random player. Their bonus actions are now full actions.",
+						"Target a random player. Their proficiency bonus is now 0.",
+						"Target a random player. When they would take damage, their closest ally will also take half that damage.",
+						"All players lose 2 AC.",
+						"All players take 1d10 damage whenever the Cube Shifts.",
+						"All players lose 10 feet of speed.",
+						"All players proficiency bonuses are reduced by 1.",
+						"All players lose 2 points in their highest stat.",
+						"All players, whenever they would gain hitpoints, gain half as many instead.",
+						"Target a random player. When they start their turn, Roll a d20.<br>1-10: They must end their turn in a Hazard Zone if possible. <br>11-20: Nothing happens.",
+						"Target 2 random players. They join bodies, and always occupy the same space. Both player's AC's are now equal to the lower original AC, and whenever either player would take damage, the other will also take half that damage. Enemies will target whichever of the 2 players acted last.",
+						"All players lose the ability to speak and understand Common.",
+						"Add all players current hitpoints together. Divide this by the number of players, rounding down. All players maximum hitpoints are reduced to this number.",
+						"Target a random player. Their bags are sealed. They cannot change weapons, access consumable items, or cast spells with material components.",
+						"All Players passive perception scores are now 8, and their active perception modifier is now -2.",
+						"Target a random player. Whenever a creature deals damage to that player, that creature regains hitpoints equal to the damage dealt.",
+						"Target a Random Player. Attacks of Opportunity against that player always hit.",
+						"Target a Random Player. They can no longer take reacions."
+					];}
+				}
+				
+				{//Data
+				
+					{//Internal Variables (DO NOT EDIT)
+						var freshLoad =true;
+						var roomReq = 0;
+						var roomCompCount=0;
+						var currentRoom=1;
+						var oppRoll;	//Opponent Rolled
+						var hzRoll;		//Hazard Zone Rolled
+						var invertHZ;	//Invert the Hazard Zone?
+						var rlRoll;		//Room Layout Rolled
+						var rtRoll;		//Room Type Rolled
+						var vcRoll;		//Victory Condition Rolled
+						var prevrtRoll; //Used to stop the same room type twice in a row
+						var prevrlRoll;
+						var prevvcRoll;
+						var prevhzRoll;
+						var roomGenerated = false;
+						var gameComplete = false;
+						var gameStart = false;
+						var usedOpps = [];			//Tracks Used Opponents.
+						var difficulty = 1; 		//Difficulties: 0 - Easy, 1 - Normal, 2 - Hard, 3 - Suicidal
+						var firstGap = 0;			//The location of the first gap in the Opponents Table. Used to stop null opponent rolls.
+						var difMod = 0;  			//DifMod represents the lowest possible cr you can roll on the opponents table
+						var baseDifMod = 0; 		//Adjusts the starting difMod of the cube by a random value between Positive and Negative bdmVariance (inclusive)
+						var mercyRoom = false; 		//True if the current room allows the players to rest
+						var magicManRoom = false; 	//True if the current room contains Magic Man, the Bringer of Chaos
+						var magicManUsed = false; 	//True if any completed room has contained Magic Man
+						var XPTotal = 0;
+						var reloadingGame = false;
+						var deepCube = false;
+						var finalRoom = false;
+						var firstBonus = false;
+						var firstRoom = true;
+						var mercyCount = 0;
+						var mercyDry = 0;			//Tracks how many rooms since the last mercy room.
+					}
+					
+					{//Settings (Edit with Caution)
+						var bdmVariance = .5;
+						var crWidth = 6; //Number of Encounters per each CR. ALL CR GROUPS MUST BE THE SAME LENGTH
+						var oWidth = 20; //Number of possible outcomes from rolling on the encounter table. Should not be set less than crWidth, or certain opponents may become impossible to roll. Larger numbers mean tougher possible fights.
+						var mercyRoomStr = "<br><h3>Players may take a short rest after completing this room</h3>";
+						var magicManRoomStr = "<br><br><b>Upon The Cube's shifting, Magic Man, Bringer of Chaos, emerges to bestow a curse...<br>&nbsp;&nbsp;&nbsp;&nbsp;<div id=\"magicManCurse\" style=\"display:inline-block;\"><img src onerror=\"curseGen()\"></div></b>";
+						var invertHZStr = " <b>Invert!</b>";
+						var pcDifCurve = 7 //How quickly should difficulty increase per player?
+						var invertHZChance = 16 //Chance out of 100 to invert the hazard zone
+						var pLev = 1; //Average level of participating players by Default?
+						var pCount = 4; //How Many Players by Default?
+						var rlCount = 9; //Number of room layout images
+						var difModAdjust = 0; //This number is plainly added to the DifMod. Default = 0
+					}
+				}
+				
+				{//UI Elements
+					var roomReqDiv;
+					var roomCompDiv;
+					var oppRollCell;
+					var hazRollCell;
+					var rlRollCell;
+					var roomLayoutImg;
+					var rtRollCell;
+					var vicRollCell;
+					var header;
+					var usedOppsDiv;
+					var coordDiv;
+					var difModDiv;
+					var xpDiv;
+					var mercyCountDiv;
+					var mainBody;
+				}
+				
+				{//Default Values
+					var roomReqDivDef = "";            
+					var roomCompDivDef = "";
+					var oppRollCellDef = "";
+					var hazRollCellDef = "";
+					var roomLayoutImgDef="";
+					var rtRollCellDef  = "";
+					var vicRollCellDef = "";
+					var headerDef	   = "";
+				}
+				
+				{//Toolbox Functions
+					function rollDice(diceSize){
+						return Math.floor((Math.random()*diceSize)+1);
+					}
+				
+					function trimRound(numTrimmed,precision){
+						return parseFloat(numTrimmed.toFixed(precision));
+					}
+				}
+				
+				{//Initialization Functions
+					function grabElements(){
+						header =      document.getElementById("header");
+						roomReqDiv 	= document.getElementById("roomReqDiv");
+						roomCompDiv = document.getElementById("roomCompDiv");
+						oppRollCell = document.getElementById("oppRollCell");
+						hazRollCell = document.getElementById("hazRollCell");
+						roomLayoutImg=document.getElementById("roomLayoutImg");
+						rlRollCell	= document.getElementById("rlRollCell");
+						rtRollCell	= document.getElementById("rtRollCell");
+						vicRollCell = document.getElementById("vicRollCell");
+						usedOppsDiv = document.getElementById("usedOpps");
+						pLevDiv		= document.getElementById("pLevDiv");
+						pCountDiv	= document.getElementById("pCountDiv");
+						difButton	= document.getElementById("difButton");
+						difModDiv	= document.getElementById("difModDiv");
+						xpDiv		= document.getElementById("xpDiv");
+						mercyCountDiv = document.getElementById("mercyCount");
+						mainBody 	= document.getElementById("body");
+						
+						
+						roomReqDivDef = roomReqDiv.innerHTML;
+						roomCompDivDef = roomCompDiv.innerHTML;
+						oppRollCellDef = oppRollCell.innerHTML;
+						hazRollCellDef = hazRollCell.innerHTML;
+						roomLayoutImgDef = roomLayoutImg.getAttribute("src");
+						rtRollCellDef  = rtRollCell.innerHTML;
+						vicRollCellDef = vicRollCell.innerHTML;
+						headerDef = header.innerHTML;
+						
+						for(i = 0; i<Opponents.length; i++){
+							if(!Opponents[i][1]){
+								firstGap = i;
+								break;
+							}
+						}
+					}
+				}
+				
+				{//UI Functions
+					function roomReqInc(){
+						if(!gameComplete){
+							roomReq++;
+							roomReqDiv.innerHTML = roomReqDivDef;
+							roomReqDiv.innerHTML += roomReq;
+						}
+					}
+					
+					function roomReqDec(){
+						if(!gameComplete && roomReq-1 > roomCompCount){
+							roomReq--;
+							roomReqDiv.innerHTML = roomReqDivDef;
+							roomReqDiv.innerHTML += roomReq;
+						}
+					}					
+				
+					function pLevInc(levIncAmount){
+						pLev+=levIncAmount;
+						if(pLev>30)
+							pLev=30;
+						pLevDiv.innerHTML = pLev;
+					}
+				
+					function pLevDec(levDecAmount){
+						pLev-=levDecAmount;
+						if(pLev<1)
+							pLev=1;
+						pLevDiv.innerHTML = pLev;
+					}
+					
+					function pLevSet(pLevToSet){
+						pLev = pLevToSet;
+						pLevDiv.innerHTML = pLev;
+					}
+					
+					function pCountInc(){
+						pCount++;
+						pCountDiv.innerHTML = pCount;
+					}
+					
+					function pCountDec(){
+						pCount--;
+						
+						if(pCount<1)
+							pCount=1;
+						
+						pCountDiv.innerHTML = pCount;
+					}
+					
+					function pCountSet(pCountToSet){
+						pCount = pCountToSet;
+						pCountDiv.innerHTML = pCount;
+					}
+					
+					function difInc(difToSet){
+					
+						if(gameStart==false || difToSet){
+							if(difToSet)
+								difficulty = difToSet;
+							else
+								difficulty++;
+							difString = "";
+						
+							if(difficulty>3)
+								difficulty=-1;
+						
+							if(difficulty==-1)
+								difString="Marathon Mode";
+							if(difficulty==0)
+								difString="Easy";
+							if(difficulty==1)
+								difString="Normal";
+							if(difficulty==2)
+								difString="Hard";
+							if(difficulty==3)
+								difString="Suicidal";
+							difButton.innerHTML = difString;
+						}
+					}
+					
+					function coordGen(gridSize){
+						coordDiv =   document.getElementById("coordDiv"+gridSize);
+						coordDiv.innerHTML = rollDice(gridSize) +", "+rollDice(gridSize);
+					}
+					
+					function oppLookup(oppToLook){
+						str = "";
+						if(Opponents[oppToLook-1][2] == 1){
+							str += "1 Enemy worth ";
+						}else{
+							str += Opponents[oppToLook-1][2] + " Enemies worth ";
+						}[]
+						str += +Opponents[oppToLook-1][1]+" Adjusted XP\n\n"+Opponents[oppToLook-1][0].replace(/<br>/gi,'\n')
+						alert(str);
+					}
+					
+					{//Print Data Functions.
+						function printAll(){
+							printOpp();
+							printHaz();
+							printRLay();
+							printRType();
+							printVCon();
+							setBodyClass();
+						}
+						
+						function printOpp(){
+							oppRollCell.innerHTML = "<b> - " + oppRoll + " ("+ x +") - "+sMagicManStr+sMercyStr+" "+ rerolled + "</b><br>" + Opponents[oppRoll-1][0];
+						}
+						
+						function printHaz(){
+							hazRollCell.innerHTML = "<b> - " + hzRoll + " - </b><br>" + Hazards[hzRoll-1]+"<br>&nbsp;";
+						}
+						
+						function printRLay(){
+							roomLayoutImg.setAttribute("src",rlRoll+".png");
+							roomLayoutImg.setAttribute("title","Room Layout "+rlRoll);
+							rlRollCell.innerHTML = rlRoll + ":"+invertHZStr.repeat(invertHZ)+" <br>";
+						}
+						
+						function printRType(){
+							rtRollCell.innerHTML = "<b> - " + rtRoll + " - </b><br>" + RoomTypes[rtRoll-1]+"<br>&nbsp;";
+						}
+						
+						function printVCon(){
+							vicRollCell.innerHTML = "<b> - "+vcRoll + " - </b><br>" + VictoryConditions[vcRoll-1][0]+"<br>&nbsp;";
+						}
+						
+						function printMercyCount(){
+							mercyCountDiv.innerHTML = mercyCount;
+						}
+						
+						function setBodyClass(){
+							
+							if(magicManRoom){
+								mainBody.className = "magicManRoom";
+								return;
+							}
+							if(mercyRoom){
+								mainBody.className = "mercyRoom";
+								return;
+							}
+							mainBody.className = "regRoom";
+						}
+					
+						function printUsedOpps(){
+							
+							usedOppsDiv.innerHTML = "";
+							
+							for( uoc = 0; uoc < roomCompCount; uoc++){
+								usedOppsDiv.innerHTML += "<a class=\"oppLink\" href=\"#\" onclick=\"oppLookup("+usedOpps[uoc]+")\" >" + usedOpps[uoc] + "</a>";
+								if(uoc+1!=roomCompCount)
+									usedOppsDiv.innerHTML +=", ";
+							}
+						}
+					}
+				}
+				
+				{//Game Logic Functions
+					function roomReqGen(a){
+						if(!freshLoad){
+							document.location.reload();
+							return;
+						}
+						usedOpps = [];
+						usedOppsDiv.innerHTML = usedOpps;
+						
+						if(a)
+							roomReq = a;
+						else
+							roomReq = rollDice(4) + rollDice(4) + 2;
+						
+						roomReqDiv.innerHTML = roomReqDivDef;
+						roomReqDiv.innerHTML += roomReq;
+						roomCompCount=0;
+						roomCompDiv.innerHTML = roomCompDivDef;
+						roomCompDiv.innerHTML += roomCompCount;
+						header.innerHTML = headerDef;
+						gameComplete=false;
+						
+						if(!gameStart){
+							difButton.innerHTML += " (Locked)";
+							difButton.disabled = true;
+						}
+						mercyCount = 0;
+						gameStart = true;
+						
+					}
+					
+					function roomReqSet(newRoomReq){
+						if(!gameComplete){
+							roomReq = newRoomReq;
+							roomReqDiv.innerHTML = roomReqDivDef;
+							roomReqDiv.innerHTML += roomReq;
+						}
+					}
+					
+					function difficultyAdjuster(){
+						/*A function that adjusts the difficulty of the next generated room by adding to he number next rolled to determine the opponents. A higher number rolled implies a harder fight.
+						This function should take into consideration the following:
+						
+						Number of Player Characters
+						Current AVG level of all player characters.
+						Difficulty Rating selected by player characters (Easy, Normal, Hard, Suicidal)
+						Current Number of rooms completed (Rooms towards the end of the cube should be harder than those at the start.)
+							The Deep Cube (Rooms further out than twice the called number of rooms) are of a significantly increased difficulty.
+						
+						Easy Difficulty should have a chance to offer "Mercy Rooms", Which offer a significant break from the action, and a slightly reduced challenge.
+						Normal Difficulty offers no improved challenge from the unimproved cube of chaos, excluding scaling based on player level.
+						Hard Difficulty should increase difficulty and reward a fair amount, with a small chance of encountering Magic Man, The Bringer of Chaos (No more than once)
+						Suicidal Difficulty should increase difficulty and reward substantially, with a slighty higher chance of encountering Magic Man. Choosing this difficulty would be suicidal...
+						
+						Step ONE: Determine base modifier....
+						Step TWO: Apply Difficulty Selection Modifier...
+						STEP THREE: Apply Room Completion Modifier...*/
+						
+						//Initialize Conditional Variables
+						currentRoom = roomCompCount+1;
+						deepCube = roomCompCount >= roomReq*2;
+						finalRoom = currentRoom == roomReq;
+						firstBonus = currentRoom == roomReq+1;
+						firstRoom = roomCompCount == 0;
+						mercyDryThreshold = 5;
+						forcedOpponent = null;
+						
+						
+						if(firstRoom)
+							baseDifMod = trimRound( 2*(bdmVariance*Math.round((Math.random()-.5)*10))/10 , 2);
+						
+						//Player Difficulty Scaling
+						
+						var pcDifMod = 0;
+						
+						if(pCount<4)
+							pcDifMod = -2 + pCount/2;
+						if(pCount>4)
+							pcDifMod = (Math.round(10*Math.pow(pcDifCurve,(pCount/4))/pcDifCurve)/10)-1;
+						if(pCount>9)
+							pcDifMod = (Math.round(10*Math.pow(pcDifCurve,(9/4))/pcDifCurve)/10)-1;
+						
+						pcDifMod = trimRound(pcDifMod,2)
+						
+						difMod = pLev -1 + baseDifMod + pcDifMod + difModAdjust;
+						{//Difficulty Selection Scaling
+							//EASY
+							if(difficulty == 0){
+								//Cube Starting Difficulty Modifier
+								difMod -=1;
+								mercyDryThreshold = 4;
+								
+								//Conditions for Short Rests
+								if((rollDice(3) == 1 || mercyDry+1 >= mercyDryThreshold) && !firstRoom ){	//33% chance of rests, and a guaranteed rest after 4 rooms without one.
+									difMod -= 3;	//Reduced CR by 3 in rooms in which you can rest.
+									mercyRoom=true;
+								}
+							}
+							
+							//NORMAL
+							if(difficulty == 1){
+								mercyDryThreshold = 4;
+								 
+								//Conditions for Short Rests
+								if(rollDice(4) == 1 || mercyDry+1 >= mercyDryThreshold)	//25% chance of rests, and a guaranteed rest after 4 rooms without one
+									mercyRoom=true;
+							}
+							
+							//HARD
+							if(difficulty == 2){
+								difMod += 1.5;	//Cube Starts 1.5 CR Above Base
+								mercyDryThreshold = 5;
+								
+								//Conditions for Magic Man
+								if(!gameComplete){
+									if(rollDice(8)==1&&!magicManUsed)	//Magic Man's spawn rate is 12.5% in regular rooms. He may not appear here if he has appeared before.
+										magicManRoom = true;
+								}
+								if(gameComplete&&!deepCube){
+									if(rollDice(6)==1&&!magicManUsed)	//Magic Man's spawn rate is 16% in bonus rooms. He may not appear here if he has appeared before.
+										magicManRoom = true;
+								}
+								if(mercyDry==0){						//Magic Man has a 10% chance of being rerolled after a mercy room.
+									if(rollDice(10)==1&&!magicManUsed)
+										magicManRoom = true;
+								}
+								//Magic Man's spawn chance is 75% in the final room and the Deep Cube. Magic Man can reappear in these rooms.
+								if((finalRoom || deepCube) && rollDice(4) != 4 ){ /*75% CHANCE*/
+									magicManRoom = true;
+								}
+								
+								//Conditions for Short Rests
+								if(rollDice(5) == 1 || mercyDry+1 >= mercyDryThreshold) //20% chance of rest, and a guaranteed rest after 5 rooms without one
+									mercyRoom=true;
+							}
+							
+							//SUICIDAL
+							if(difficulty == 3){
+								difMod += 2; //Cube Starts 2 CR above Base
+								difMod += .25*roomCompCount; //Cube Scales .25 CR faster. .75 CR increase between rooms.
+								mercyDryThreshold = 5;
+								
+								//Conditions for Magic Man
+								if(!gameComplete){
+									if(rollDice(6)==1)	//Magic Man's Spawn rate is 16% in regular rooms.
+										magicManRoom = true;
+								}
+								if(gameComplete&&!deepCube){
+									if(rollDice(3)==1)	//Magic Man's spawn rate is 33% in bonus rooms.
+										magicManRoom = true;
+								}
+								if(finalRoom || deepCube){	//Magic Man is Guaranteed to spawn in the last room and in every room in the Deep Cube
+									magicManRoom = true;
+								}
+								if(mercyDry==0){	//Magic Man has a 10% chance of being rerolled after a mercy room.
+									if(rollDice(10)==1)
+										magicManRoom = true;
+								}
+								
+								//Difficulty Rampups
+								if(gameComplete)
+									difMod += .25*(roomCompCount-roomReq);	//Cube Scales an additional .25 CR faster in bonus rooms. 1.5 CR increase between rooms. (.5 base, .5 game complete, .25 suicidal, .25 suicidal game complete.
+								if(deepCube)
+									difMod += .5*roomCompCount-(roomReq*2);	//Cube scales an additional .5 CR faster. 2 CR increase between rooms.
+								
+								//Conditions for Short Rests
+								if(rollDice(5) == 1 || mercyDry+1 >= mercyDryThreshold) //20% chance of rest and a guaranteed rest after 5 rooms without one
+									mercyRoom=true;
+							}
+							
+							//MARATHON MODE
+							if(difficulty == -1){
+								if(currentRoom%3==0){
+									mercyRoom=true;
+									mercyRoomStr = "<br><h3>Players may take a <b>SHORT</b> rest after completing this room</h3>";
+								}
+								if(currentRoom%6==0)
+									mercyRoomStr = "<br><h3>Players may take a <b>LONG</b> rest after completing this room</h3>";
+								if(firstRoom)
+									roomReqSet(firstGap);
+								forcedOpponent = currentRoom;
+								difMod = 0;
+							}
+						}
+						
+						//ALL DIFFICULTIES
+						//Rooms Completed Scaling
+						difMod += (1/2)*roomCompCount;	//Difficulty increases by .5 between rooms
+						if(gameComplete){
+							difMod += 1/2*(roomCompCount - roomReq);	//Difficulty increases by an additional .5 between rooms (1 total)
+							
+							if(mercyRoom) //Mercy Rooms are slightly less likely (20%) in bonus rooms.
+								if(rollDice(5) == 1 && mercyDry+1 < mercyDryThreshold+1)
+									mercyRoom=false;
+						}
+						if(magicManRoom || finalRoom || deepCube || firstRoom || mercyDry == 0) //Magic Man destroys short rest rooms, and they are disabled in the final room and in the deep Cube to discourage staying longer than the called number. They're also disabled in the first room because the first room is supposed to be the easiest challenge.
+							mercyRoom = false;	
+							
+							
+						difModDiv.innerHTML = trimRound(difMod,2);
+						
+						return forcedOpponent;
+					}
+					
+					function generateRoom(oppToGen){
+						
+						if(  !gameComplete || (gameComplete && difficulty!=0)){
+							cancelRoom();
+							
+							c = difficultyAdjuster();
+							if (c) {oppToGen = c};
+							c = null;
+							
+							do{
+								checkInvertHZ();
+								hzRoll= rollDice(Hazards.length);
+								rlRoll= rollDice(rlCount);
+								rtRoll= rollDice(RoomTypes.length);
+								vcRoll= rollDice(VictoryConditions.length);
+							}while(hzRoll==prevhzRoll || rlRoll == prevrlRoll || rtRoll == prevrtRoll || vcRoll == prevvcRoll );
+							
+							g = Math.round(crWidth*difMod);
+							if(g>Opponents.length - oWidth)
+								g = Opponents.length - oWidth;
+							if(g>firstGap - oWidth)
+								g = firstGap - oWidth;
+							if(g< Math.abs(oWidth)*-1 +1)
+								g= Math.abs(oWidth)*-1 +1;
+							
+							lc = -1;
+							x = 0;
+							do{
+								lc++;
+								var oppsAlreadyUsed=false;
+								var validRoll=true;
+								
+								x = rollDice(oWidth);
+									
+								oppRoll= g + x;
+								if(oppRoll < 1 || oppRoll > Opponents.length || oppRoll > firstGap){
+									validRoll=false;
+									continue;
+								}
+								for(i=0; i<usedOpps.length; i++){
+									if(oppRoll == usedOpps[i] ){
+										oppsAlreadyUsed = true;
+										if(lc<100)
+											validRoll=false;
+									}
+								}
+								if( Opponents[oppRoll-1][0]=="Maia" && (lc<100) &&  (!gameComplete||finalRoom))
+									validRoll=false;
+								
+							}while(!validRoll && !oppToGen);
+							
+							
+							sMercyStr = "";
+							if(mercyRoom)
+								sMercyStr = " (Short Rest Allowed)";
+								
+							sMagicManStr = "";
+							if(magicManRoom)
+								sMagicManStr = " (Magic Man Casts a Curse!)";
+
+							rerolled = "";
+							if (lc > 0 && oppsAlreadyUsed && !oppToGen)
+								rerolled = "<br>---!!!REROLLED " + lc +" TIMES!!!---";
+							
+							if(oppToGen)
+								oppRoll = oppToGen;
+						
+							printAll();
+							
+							if(mercyRoom)
+								oppRollCell.innerHTML += mercyRoomStr;
+							
+							if(magicManRoom)
+								oppRollCell.innerHTML += magicManRoomStr;
+								
+							
+						
+						
+							roomGenerated=true;
+						}else{
+							document.getElementById("roomGenButton").disabled = true;
+							document.getElementById("roomGenButton").innerHTML = " The Cube of Chaos is no home to cowards.<br>To Generate Bonus Rooms, allow The Cube to truly challenge you...";
+						}
+					}
+					
+					function rewardGen(){
+						//This function generates a random reward based off of the current difficulty adjustment and the number of rooms complete.
+						//The higher the difficulty rating is during at the end of the final room, the better the reward.
+						//The higher the number of rooms completed should also greatly influence the reward. One room on suicidal difficulty should not be as rewarding as 3 on Hard.
+						
+						
+					}	
+				
+					function completeRoom(){
+					
+						if(roomGenerated){
+							
+							freshLoad = false;
+							document.getElementById("roomCountRoll").innerHTML = " Refresh Page To Begin a New Game ";
+							
+							usedOpps[roomCompCount] = oppRoll;
+							if(Opponents[oppRoll-1][1])
+								XPTotal += Opponents[oppRoll-1][1];
+							
+							xpDiv.innerHTML = XPTotal;
+							
+							if(!reloadingGame){	
+								prevhzRoll = hzRoll;
+								prevrtRoll = rtRoll;
+								prevrlRoll = rlRoll;
+								prevvcRoll = vcRoll;
+								
+								if(magicManRoom)
+									magicManUsed = true;
+								
+								if(mercyRoom){
+									mercyCount++;
+									mercyDry = 0;
+									printMercyCount();
+								}else{
+									mercyDry++;
+								}
+							}
+							
+							cancelRoom();
+							roomCompCount++;
+							roomCompDiv.innerHTML = roomCompDivDef;
+							roomCompDiv.innerHTML += roomCompCount;
+						
+							if(roomCompCount>=roomReq&&!gameComplete&&gameStart){
+								header.innerHTML += " - CUBE COMPLETE!";
+								gameComplete = true;
+							}
+						}
+						printUsedOpps();
+					}
+				
+					function cancelRoom(){
+						oppRollCell.innerHTML = oppRollCellDef;
+						hazRollCell.innerHTML = hazRollCellDef;
+						rlRollCell.innerHTML = "";
+						rtRollCell.innerHTML = "";
+						roomLayoutImg.setAttribute("src",roomLayoutImgDef);
+						roomLayoutImg.setAttribute("title","");
+						vicRollCell.innerHTML = vicRollCellDef;
+						roomGenerated=false;
+						mercyRoom = false;
+						magicManRoom = false;
+						difMod = 0;
+						setBodyClass();
+					}
+				
+					function Reroll(typeToReroll){
+						if(roomGenerated){
+							if(typeToReroll == "haz"){
+								hzRoll= rollDice(Hazards.length);
+								printHaz();
+							}
+							if(typeToReroll == "rLay"){
+								rlRoll= rollDice(rlCount);
+								checkInvertHZ();
+								printRLay();
+							}
+							if(typeToReroll == "rType"){
+								rtRoll= rollDice(RoomTypes.length);
+								printRType();
+							}
+							if(typeToReroll == "vCon"){
+								vcRoll= rollDice(VictoryConditions.length);
+								printVCon();
+							}
+						}
+					}
+				
+					function checkInvertHZ(){
+						if(rollDice(100)<invertHZChance)
+							invertHZ=1;
+						else
+							invertHZ=0;
+					}
+				
+					{//Modifier Functions
+						function ritualVC(){
+							curDiv = document.getElementById("ritualVC");
+							circleCount = pCount-1;
+							if(circleCount<=0)
+								circleCount=1;
+							if(curDiv)
+								curDiv.innerHTML = circleCount;
+							curDiv.className = "VCVariable";
+						}
+						
+						function captureVC(){
+							curDiv = document.getElementById("captureVC");
+							chargeCount = pCount+1;
+							if(circleCount<=0)
+								circleCount=1;
+							if(curDiv)
+								curDiv.innerHTML = chargeCount;
+							curDiv.className = "VCVariable";
+						}
+						
+						function orbVC(){
+							curDiv = document.getElementById("orbVC");
+							orbStrength=difMod-1;
+							if(orbStrength<1)
+								orbStrength=1;
+							if(curDiv)
+								curDiv.innerHTML = Math.floor(orbStrength)+"d6"
+							curDiv.className = "VCVariable";								
+						}
+						
+						function survivalVC(){
+							curDiv = document.getElementById("survivalVC");
+							surviveLength = rollDice(2)+rollDice(2)+2;
+							if(surviveLength == 6)
+								if(rollDice(2)==1)
+									surviveLength=4;
+							if(curDiv)
+								curDiv.innerHTML = surviveLength;
+							curDiv.className = "VCVariable";	
+						}
+						
+						/*function hiveVC(){		//FOR USE WITH HIVE VICTORY CONDITION (DEPRECIATED)
+							curDiv = document.getElementById("hiveVC");
+							x = Math.floor(((rollDice(6)+10)*pCount)/4);
+							if(curDiv)
+								curDiv.innerHTML = x;
+						}*/
+						
+						function targetVC(){
+							curDiv = document.getElementById("targetVC");
+							nodeCount = rollDice(pCount*2) + pCount;
+							if(curDiv)
+								curDiv.innerHTML = nodeCount;
+							curDiv.className = "VCVariable";
+						}
+						
+						function rescueVC(){
+							curDiv = document.getElementById("rescueVC")
+							curDiv2 = document.getElementById("rescueVC2")
+							
+							if(roomCompCount==0){
+								Reroll("vCon");
+								return 0;
+							}
+							prevRoomOppCount = Opponents[usedOpps[roomCompCount-1]-1][2];
+							
+							if(prevRoomOppCount==1||prevRoomOppCount==2){
+								Reroll("vCon");
+								return 0;
+							}
+							
+							if(prevRoomOppCount>=3&&prevRoomOppCount<=5)
+								curDiv.innerHTML = "weakest"
+								
+							if(prevRoomOppCount>=6)
+								curDiv.innerHTML = "strongest"
+								
+							do{
+								vcRoll2 = rollDice(VictoryConditions.length)
+								vCon2Tag=VictoryConditions[vcRoll2-1][1];
+							}while(vCon2Tag=="RE"||vCon2Tag=="DE"||vCon2Tag=="MP"||vCon2Tag=="CA");
+							
+							curDiv2.innerHTML = "<b> - "+vcRoll2 + " - </b><br>" + VictoryConditions[vcRoll2-1][0]+"<br>&nbsp;";
+							curDiv.className = "VCVariable";
+						}
+						
+						function curseGen(){
+							curDiv = document.getElementById("magicManCurse");
+							x = rollDice(MagicManCurses.length);
+							if(curDiv)
+								curDiv.innerHTML = "("+x+") "+MagicManCurses[x-1];
+							curDiv.className = "VCVariable";
+						}
+					}
+				}
+				
+				{//Save/Load Functions
+					function manualReloadGame(){ //Guides User through loading a saved game.
+						reloadingGame = true;
+						
+						difInc(parseInt(prompt("What was the difficulty? 0- Easy, 1- Normal, 2- Hard, 3- Suicidal")));
+						
+						rlgRoomReq = parseInt(prompt("How Many Rooms were required?"));
+						roomReqGen(rlgRoomReq);
+						
+						rlgRoomComp = parseInt(prompt("How Many Rooms were completed?"));
+						
+						for(j = 0; j<rlgRoomComp; j++){
+							rlgCurOppRoll = parseInt(prompt("Opponent ID for room " + (j+1) +"?"));
+							generateRoom(rlgCurOppRoll);
+							completeRoom();
+						}
+						
+						baseDifMod = parseFloat(prompt("What was the base difficulty modifier (-1 through 1)?"));
+						
+						magicManUsed = confirm("Press OK if Magic Man Appeared!");
+						
+						reloadingGame = false;
+					}
+					
+					function dumpData(){	//Posts necessary data to reload game in console.
+						console.log("$Difficulty: "+difficulty);
+						console.log("$Rooms Required: "+roomReq);
+						console.log("$Rooms Completed: "+roomCompCount);
+						console.log("$");
+						console.log("$Opponents Used: "+usedOpps);
+						for(i=0;i<usedOpps.length;i++)
+							console.log("$Opponent "+(i+1)+": "+Opponents[usedOpps[i]-1]);
+						console.log("$");
+						console.log("$Base Difficulty Mod: "+baseDifMod);
+						console.log("$Magic Man Used: "+magicManUsed);
+						
+						return "Data Dump Successful.";
+					}
+					
+					function listSaves(){
+						saves = (localStorage.getItem("cubeOfChaosSaveGames")+"").split(';');
+						
+						for(i = 0; i<saves.length; i++){
+							if(saves[i] == "")
+								saves.splice(i,1);
+						}
+						return saves;
+					}
+					
+					function saveGame() {
+						if(roomCompCount == 0 || gameStart == false){
+							window.alert("Cannot save a null game");
+							return false
+						}
+						
+						existingSaveNames=listSaves();
+						
+						invalidName=false;
+						etag="";
+						do{
+							if(invalidName){
+								etag = "Save name invalid. ";
+								invalidName=false;
+							}
+							sName = prompt(etag+"Session Name?","Last Session").toLowerCase();
+							etag="";
+							
+							for(i = 0; i<sName.length; i++){
+								if(sName[i] == ';')
+									invalidName=true;
+							}
+							
+							for(i1 = 0; i1<existingSaveNames.length; i1++){
+								if(existingSaveNames[i1] == sName)
+									invalidName=true;
+						}
+							
+						}while(invalidName);
+						
+						
+						allSaves = localStorage.getItem("cubeOfChaosSaveGames");
+						if(allSaves == null)
+							allSaves = "";
+						allSaves += (sName+";");	
+						localStorage.setItem("cubeOfChaosSaveGames", allSaves);
+						
+						localStorage.setItem(sName+"-PlayerCount", pCount);
+						localStorage.setItem(sName+"-PlayerLevel", pLev);
+						localStorage.setItem(sName+"-Difficulty", difficulty);
+						localStorage.setItem(sName+"-RReq", roomReq);
+						localStorage.setItem(sName+"-RComp", roomCompCount);
+						localStorage.setItem(sName+"-Opponents", usedOpps);
+						localStorage.setItem(sName+"-bDifMod", baseDifMod);
+						localStorage.setItem(sName+"-mManUsed", magicManUsed);
+						localStorage.setItem(sName+"-mercyCount", mercyCount);
+						localStorage.setItem(sName+"-mercyDry",	mercyDry);
+						
+						printSaves();
+						
+						return "Saved Game Successfully";
+					}
+					
+					function loadGame(){ 
+						reloadingGame = true;
+						
+						if(!freshLoad){
+							document.location.reload();
+							return;
+						}
+						
+						lName = prompt("Session Name?","Last Session").toLowerCase();
+						
+						pCountSet(parseInt(localStorage.getItem(lName+"-PlayerCount")));
+						pLevSet(parseInt(localStorage.getItem(lName+"-PlayerLevel")));
+						
+						difInc(parseInt(localStorage.getItem(lName+"-Difficulty")));
+						
+						
+						rlgRoomReq = parseInt(localStorage.getItem(lName+"-RReq"));
+						roomReqGen(rlgRoomReq);
+						
+						rlgRoomComp = parseInt(localStorage.getItem(lName+"-RComp"));
+						
+						rlgUsedOpps = localStorage.getItem(lName+"-Opponents").split(',').map(Number);;
+						
+						
+						
+						for(j = 0; j<rlgUsedOpps.length; j++){
+							generateRoom(rlgUsedOpps[j]);
+							completeRoom();
+							if(j == 0)
+								baseDifMod = parseFloat(localStorage.getItem(lName+"-bDifMod"));
+						}
+						
+						magicManUsed = localStorage.getItem(lName+"-mManUsed").toLowerCase() == "true";
+						mercyCount = parseInt(localStorage.getItem(lName+"-mercyCount"));
+						mercyDry = parseInt(localStorage.getItem(lName+"-mercyDry"));
+						printMercyCount();
+						
+						reloadingGame = false;
+					}
+					
+					function deleteSave(){
+					
+						dName = prompt("Session to Delete?","Last Session").toLowerCase();
+						
+						saveNames = listSaves();
+						newSaveList = "";
+						
+						for(i1 = 0; i1<saveNames.length; i1++){
+							if(saveNames[i1] == dName)
+								break;
+						}
+						
+						if(i1 >= saveNames.length){
+							window.alert("save not found.");
+							return false;
+						}else{
+							saveNames.splice(i1,1);
+							for(i2 = 0; i2<saveNames.length; i2++){
+								if(saveNames[i2] != "")
+									newSaveList += saveNames[i2]+';';
+							}
+							
+							localStorage.setItem("cubeOfChaosSaveGames",newSaveList);
+							
+							localStorage.removeItem(dName+"-PlayerCount");
+							localStorage.removeItem(dName+"-PlayerLevel");
+							localStorage.removeItem(dName+"-Difficulty");
+							localStorage.removeItem(dName+"-RReq");
+							localStorage.removeItem(dName+"-RComp");
+							localStorage.removeItem(dName+"-Opponents");
+							localStorage.removeItem(dName+"-bDifMod");
+							localStorage.removeItem(dName+"-mManUsed");
+							
+							printSaves();
+							return true;
+						}
+						
+					}
+					
+					function printSaves(){
+						saveDiv = document.getElementById("saveDataDiv");
+						saveDiv.innerHTML = "";
+						s=listSaves();
+						for(i = 0; i<s.length; i++){
+							saveDiv.innerHTML += s[i]+"<br>"
+						}
+					}
+				}	
+		
+		</script>
+		
+		<style type="text/css">
+			html, body
+			{
+				margin: 0;
+				padding: 0;
+				min-height: 100vh;
+				height: 100%;
+				display: flex;
+				flex-direction: column;
+			}
+			body {
+				font-family: consolas;
+			}
+			#BodyDiv {
+				width: 60%;
+				min-height: 100vh;
+				height: auto;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 0;
+				margin-bottom: 0;
+				position: sticky;
+				top: 0;
+				padding-left: 40px;
+				padding-right: 40px;
+				background-color: white;
+				overflow: auto;
+			}
+			.VCVariable{
+				font-weight: bold;
+				font-size: 115%;
+			}
+			.oppLink:visited{
+				color: blue;
+			}
+			.oppLink:hover{
+				color: red;
+			}
+			table { 
+				border-collapse: collapse; 
+				border: 1px solid; 
+			}
+			tbody { 
+				border: 1px solid; 
+				vertical-align: top;
+			}
+			.regRoom{
+				background-color: #333333;
+			}
+			.mercyRoom{
+				background-color: #003300;
+			}
+			.magicManRoom{
+				background-color: #330000;
+			}
+			td + td,
+			th + th { border-left: 1px solid; }
+			tr + tr { border-top: 1px solid; }
+		</style>
+		
+	</head>
+	<body onload="grabElements()" id="body" class="regRoom">
+	<div id="BodyDiv">
+		<h1 id="header">The Cube of Chaos</h1>
+		<div>
+			<div id="roomReqDiv">  Rooms Required:  </div>
+			<div id="roomCompDiv" style="display:inline-block;">Rooms Completed: </div> (<div id="xpDiv" style="display:inline-block;">0</div>)<br>
+			<button id="roomCountRoll" onclick="roomReqGen()">Generate Room Requirement (Start Game) </button>
+			<div>Edit Room Requirement: <button onclick="roomReqInc()">+</button> <button onclick="roomReqDec()">-</button></div>
+			<div>Difficulty: (<div id="difModDiv" style="display:inline-block;">0</div>) <button id="difButton" onclick="difInc()">Normal</button></div>
+			<div><br>Average Player Level: <button onclick="pLevInc(5)">+5</button><button onclick="pLevInc(1)">+1</button> <div id="pLevDiv" style="display:inline-block;">1</div> <button onclick="pLevDec(1)">-1</button><button onclick="pLevDec(5)">-5</button></div>
+			<div>Player Count: <button onclick="pCountInc()">+</button> <div id="pCountDiv" style="display:inline-block;">4</div> <button onclick="pCountDec()">-</button></div>
+		</div><br>
+		
+		<div>
+			Stats:<br>
+			Mercy Rooms: <div id="mercyCount" style="display:inline-block;">0</div>
+		</div>
+		<p>
+			<button id="roomGenButton" onclick="generateRoom()"> Generate Room! </button> 
+			<button id="roomCompButton" onclick="completeRoom()"> Room Completed! </button> 
+			<button id="roomCancButton" onclick="cancelRoom()"> Cancel Room </button>
+			
+			<table id="roomTable" width="95%" align="center">
+				<tbody>
+					<tr>
+						<td width="225" ><h3>Opponent Roll: </h3></td>
+						<td id="oppRollCell"></td>
+					</tr>
+					<tr>
+						<td><h3>Hazard Zone Roll: </h3>
+							<button onclick="Reroll('haz')"> Reroll </button></td>
+						<td id="hazRollCell"></td>
+					</tr>
+					<tr>
+						<td><h3>Room Layout</h3>
+						<button onclick="Reroll('rLay')"> Reroll </button></td>
+						<td><div id="rlRollCell"></div><img id="roomLayoutImg" title="" alt="" src=""></td>
+					</tr>
+					<tr>
+						<td><h3>Room Type</h3>
+						<button onclick="Reroll('rType')"> Reroll </button></td>
+						<td id="rtRollCell"></td>
+					</tr>
+					<tr>
+						<td><h3>Victory Condition</h3>
+						<button onclick="Reroll('vCon')"> Reroll </button></td>
+						<td id="vicRollCell"></td>
+					</tr>
+				</tbody>
+			</table>
+		</p>
+		Used Opponent Rolls: 
+		<div id="usedOpps"></div>
+		<br> <button id="coordGenButton" onclick="coordGen(10)"> Generate Location (10x10) </button> <div id="coordDiv10" style="display:inline-block;"></div>
+		<br> <button id="coordGenButton" onclick="coordGen(20)"> Generate Location (20x20) </button> <div id="coordDiv20" style="display:inline-block;"></div>
+		<br><br>
+		<div>
+			<button onclick="saveGame()">Save Game</button><button onclick="loadGame()">Load Game</button><button onclick="deleteSave()">Delete Game</button><br><b>Saved Games:</b>
+			<div id="saveDataDiv" style="display:inline-block;"><img src onerror="printSaves()"></div>
+		</div>
+	</div>
+	
+	</body>
+</html>

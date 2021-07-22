@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script>
+			//Init
+			
+				//Lookup Tables
+				var Opponents = [
+					"Dryad x3 (MM 121)<br>Ghoul x3 (MM 148)<br>Neogi x2 (VGtM 180)",
+					"Choker x3 (MToF 123)<br>Gibbering Mouther x2 (MM 157)<br>Roper (MM 261)",
+					"Iron Cobra (MToF 125)<br>Quadrone x5 (MM 226)",
+					"Minotaur x3 (MM 223)<br>Cult Fanatic x2 (MM 345)",
+					"Shambling Mound (MM 270)<br>Will-o-Wisp x3 (MM 301)",
+					"Cloud Giant (MM 154)",
+					"Ankheg x6 (MM 21)",
+					"Lion x8 (MM 331)",
+					"Babau (VGtM 136)<br>Specter x5 (MM 279)",
+					"Bulezau x2 (MToF 131)<br>Dybbuk (MToF 132)",  //10
+					"Ghost (MM 147)<br>Mummy x2 (MM 228)<br>Stegosaurus (MM 140)",
+					"Beholder Zombie (MM 316)<br>Kobold Dragonshield x5 (VGtM 165)",
+					"Helmed Horror (MM 183)<br>Manticore (MM 213)<br>Wight (MM 300)",
+					"Fire Snake x8 (MM 265)",
+					"Orc Claw of Luthic x2 (VGtM 183)<br>Orc Blade of Ilneval x2 (VGtM 183)",
+					"Zombie x30 (MM 316)",
+					"Young Blue Dragon (MM 118)",
+					"Bone Naga (MM 233)<br>Harpy x5 (MM 181)",
+					"Behir (MM 25)",
+					"Imp x4 (MM 76)<br>Pegasus x2 (MM 250)" //20
+					
+				];
+				
+				var Hazards = [
+					"The Hazard Zone lowers 5 feet and fills with lava, dealing 8d10 fire damage on contact.",
+					"The Hazard Zone emits strong winds that change direction randomly each round.",
+					"The Hazard Zone emits an anti-Magic field that extends 100ft into the air.",
+					"Any creature that begins it's turn in the Hazard zone regains 1d6 hp.",
+					"The Hazard Zone raises 20 feet vertically. The resulting walls are climbable.",
+					"The Hazard Zone lowers by 15 feet and fills with acid, dealing 4d10 acid damage on contact.",
+					"The Hazard Zone becomes covered in ice. Any creature that moves across it must succeed on a DC15 Dex Saving throw or fall prone.",
+					"The Hazard Zone lowers by 20 feet.",
+					"The Hazard Zone is covered in a Web Spell",
+					"Any spells cast within the Hazard Zone trigger a Wild Magic surge." //10
+				];
+				
+				var VictoryConditions = [
+					"In order to continue, defeat all enemies.",
+					"A number of Arcane circles equal to the number of players - 1 appear on the ground in a non Hazard Zone. All circles must be occupied by a PC on initiative 20.",
+					"Both an empty, bowl shaped pedestal and a crystal orb appear in a non-hazard zone. Players must place the orb on the pedestal and defend it for 1 round.",
+					"A Random enemy is marked with a golden sigil. It has maximum HP for its hitdice, and has +2 to damage and attack rolls."
+				];
+				
+				//Data
+				var roomReq;
+				var roomCompCount=0;
+				var oppRoll;
+				var hzRoll;
+				var rlRoll;
+				var vcRoll;
+				var roomGenerated = false;
+				var gameComplete = false;
+				var usedOpps = [];
+				
+				//Elements
+				var roomReqDiv;
+				var roomCompDiv;
+				var oppRollCell;
+				var hazRollCell;
+				var roomLayoutImg;
+				var vicRollCell;
+				var header;
+				var usedOppsDiv;
+				var coordDiv;
+				
+				//Default Values
+				var roomReqDivDef = "";
+				var roomCompDivDef = "";
+				var oppRollCellDef = "";
+				var hazRollCellDef = "";
+				var roomLayoutImgDef="";
+				var vicRollCellDef = "";
+				var headerDef	   = "";
+				
+				
+				function grabElements(){
+					header =      document.getElementById("header");
+					roomReqDiv 	= document.getElementById("roomReqDiv");
+					roomCompDiv = document.getElementById("roomCompDiv");
+					oppRollCell = document.getElementById("oppRollCell");
+					hazRollCell = document.getElementById("hazRollCell");
+					roomLayoutImg=document.getElementById("roomLayoutImg");
+					vicRollCell = document.getElementById("vicRollCell");
+					usedOppsDiv = document.getElementById("usedOpps");
+					coordDiv =    document.getElementById("coordDiv");
+					
+					
+					roomReqDivDef = roomReqDiv.innerHTML;
+					roomCompDivDef = roomCompDiv.innerHTML;
+					oppRollCellDef = oppRollCell.innerHTML;
+					hazRollCellDef = hazRollCell.innerHTML;
+					roomLayoutImgDef = roomLayoutImg.getAttribute("src");
+					vicRollCellDef = vicRollCell.innerHTML;
+					headerDef = header.innerHTML;
+				}
+				
+				function rollDice(x){
+					return Math.floor((Math.random()*x)+1);
+				}
+				
+				function roomReqGen(){
+					usedOpps = [];
+					usedOppsDiv.innerHTML = usedOpps;
+					roomReq = rollDice(4) + rollDice(4) + 2;
+					roomReqDiv.innerHTML = roomReqDivDef;
+					roomReqDiv.innerHTML += roomReq;
+					roomCompCount=0;
+					roomCompDiv.innerHTML = roomCompDivDef;
+					roomCompDiv.innerHTML += roomCompCount;
+					header.innerHTML = headerDef;
+					gameComplete=false;
+				}
+				
+				function roomReqInc(){
+					roomReq++;
+					roomReqDiv.innerHTML = roomReqDivDef;
+					roomReqDiv.innerHTML += roomReq;
+				}
+				
+				function roomReqDec(){
+					roomReq--;
+					roomReqDiv.innerHTML = roomReqDivDef;
+					roomReqDiv.innerHTML += roomReq;
+				}
+				
+				function generateRoom(){
+				
+					if(!gameComplete){
+						hzRoll= rollDice(Hazards.length);
+						rlRoll= rollDice(6);
+						vcRoll= rollDice(VictoryConditions.length);
+						
+						var oppsAlreadyUsed = true;
+						
+						while(oppsAlreadyUsed){ 
+							oppsAlreadyUsed=false;
+							oppRoll= rollDice(Opponents.length);
+							
+							for(var i=0; i<=usedOpps.length; i++){
+								if(oppRoll == usedOpps[i])
+									oppsAlreadyUsed = true;
+							}
+						}
+						
+					
+						oppRollCell.innerHTML = oppRollCellDef;
+						hazRollCell.innerHTML = hazRollCellDef;
+						roomLayoutImg.setAttribute("src",roomLayoutImgDef);
+						vicRollCell.innerHTML = vicRollCellDef;
+					
+						oppRollCell.innerHTML += oppRoll+ " - " + Opponents[oppRoll-1];
+						hazRollCell.innerHTML += hzRoll + " - " + Hazards[hzRoll-1];
+						roomLayoutImg.setAttribute("src",rlRoll+".png");
+						vicRollCell.innerHTML += vcRoll + " - " + VictoryConditions[vcRoll-1];
+					
+						roomGenerated=true;
+					}
+				}
+				
+				function completeRoom(){
+				
+					if(roomGenerated){
+						
+						usedOpps[roomCompCount] = oppRoll;
+						
+						cancelRoom();
+						roomCompCount++;
+						roomCompDiv.innerHTML = roomCompDivDef;
+						roomCompDiv.innerHTML += roomCompCount;
+					
+						if(roomCompCount>=roomReq){
+							header.innerHTML += " - CUBE COMPLETE!";
+							gameComplete = true;
+						}
+					}
+					usedOppsDiv.innerHTML = usedOpps;
+				}
+
+				function cancelRoom(){
+					oppRollCell.innerHTML = oppRollCellDef;
+					hazRollCell.innerHTML = hazRollCellDef;
+					roomLayoutImg.setAttribute("src",roomLayoutImgDef);
+					vicRollCell.innerHTML = vicRollCellDef;
+					roomGenerated=false;
+				}
+				
+				function coordGen(){
+					coordDiv.innerHTML = rollDice(20) +", "+rollDice(20);
+				}
+		</script>
+		
+		<style type="text/css">
+			table { border-collapse: collapse; border: 1px solid;}
+			tbody { border: 1px solid;}
+
+			td + td,
+			th + th { border-left: 1px solid; }
+			tr + tr { border-top: 1px solid; }
+		</style>
+		
+	</head>
+	<body style="font-family:consolas" onload="grabElements()">
+		<h1 id="header">The Cube of Chaos</h1>
+		
+		<p>
+			<div id="roomReqDiv">  Rooms Required:  </div>
+			<div id="roomCompDiv">Rooms Completed: </div>
+			<button id="roomCountRoll" onclick="roomReqGen()">Generate Room Requirement</button>
+			<div>Edit Room Requirement: <button onclick="roomReqInc()">+</button> <button onclick="roomReqDec()">-</button></div>
+		</p>
+		
+		<p>
+			<button id="roomGenButton" onclick="generateRoom()"> Generate Room! </button> 
+			<button id="roomCompButton" onclick="completeRoom()"> Room Completed! </button> 
+			<button id="roomCancButton" onclick="cancelRoom()"> Cancel Room </button>
+			
+			<table id="roomTable">
+				<tbody>
+					<tr>
+						<td><h3>Opponent Roll: </h3></td>
+						<td id="oppRollCell"></td>
+					</tr>
+					<tr>
+						<td><h3>Hazard Zone Roll: </h3></td>
+						<td id="hazRollCell"></td>
+					</tr>
+					<tr>
+						<td><h3>Room Layout</h3></td>
+						<td><img id="roomLayoutImg" src=""></td>
+					</tr>
+					<tr>
+						<td><h3>Victory Condition</h3></td>
+						<td id="vicRollCell"></td>
+					</tr>
+				<tbody>
+			</table>
+		</p>
+		Used Opponent Rolls: 
+		<div id="usedOpps"></div>
+		<br> <button id="coordGenButton" onclick="coordGen()"> Generate Spawn Location </button> <div id="coordDiv" style="display:inline-block;"></div>
+	</body>
+</html>
